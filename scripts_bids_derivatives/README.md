@@ -1,5 +1,4 @@
 # scripts_bids_derivatives
-BrainVoyager Python Scripts
 This set of simple Python scripts is intended for use with BrainVoyager 
 and the Python library bvbabel (https://github.com/ofgulban/bvbabel). 
 The scripts are optimized for the file naming and folder structure convention 
