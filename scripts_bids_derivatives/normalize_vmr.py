@@ -47,8 +47,8 @@ sessions = [1]
 anat_prep = 'workflow_id-1_type-2_name-anat-preprocessing'
 anat_norm = 'workflow_id-2_type-3_name-anat-normalization'
 
-MNI = True           # Apply MNI normalization
-Talairach = True    # Apply Talairach transformation
+MNI = True          # Apply MNI normalization
+Talairach = True  # Apply Talairach transformation
 SKIP_IF_OUTPUT_EXISTS = True  # Skip if output files already exist
 suffix = '_IIHC'     # VMR should be at least skull-stripped
 
@@ -102,9 +102,8 @@ for subj in subjects:
 
         # Step 1: Transformations
         try:
-            brainvoyager.open(norm_vmr)
-
             if Talairach:
+                brainvoyager.open(norm_vmr)
                 tal_file = norm_vmr[:-4] + "_aTal.vmr"
                 if SKIP_IF_OUTPUT_EXISTS and os.path.exists(tal_file):
                     msg = f"Skipped Talairach transformation — output already exists: {tal_file}"
@@ -118,8 +117,9 @@ for subj in subjects:
                         msg = f'{sub_id} {ses_id}: Talairach transformation failed — expected file not created: {tal_file}'
                         log_message(log_file, msg)
                         errors.append(msg)
-
+                bv.close_all()
             if MNI:
+                brainvoyager.open(norm_vmr)
                 mni_file = norm_vmr[:-4] + "_MNI.vmr"
                 if SKIP_IF_OUTPUT_EXISTS and os.path.exists(mni_file):
                     msg = f"Skipped MNI normalization — output already exists: {mni_file}"
@@ -133,8 +133,7 @@ for subj in subjects:
                         msg = f'{sub_id} {ses_id}: MNI normalization failed — expected file not created: {mni_file}'
                         log_message(log_file, msg)
                         errors.append(msg)
-
-            bv.close_all()
+                bv.close_all()
 
         except Exception as e:
             msg = f'{sub_id} {ses_id}: Normalization error: {e}'
