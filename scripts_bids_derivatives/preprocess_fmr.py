@@ -1,6 +1,53 @@
 """
 fMRI Preprocessing Pipeline for BrainVoyager Data Analysis File and Folder Structure (BIDS)
-Created on 2025-05-05
+
+This script performs preprocessing on fMRI data in a BIDS-like directory structure
+using BrainVoyager. It supports multiple subjects, sessions, and runs, with flexible
+control over preprocessing steps and logging.
+
+What it does:
+- Converts raw NIfTI files to FMR format or resumes preprocessing from an existing FMR with a specified suffix
+- Applies preprocessing steps such as:
+    - Motion correction (intrasession or single-run)
+    - Slice scan time correction (SSC)
+    - Temporal high-pass filtering
+    - Temporal smoothing
+    - Spatial smoothing
+    - Mean intensity adjustment
+- Supports configuration of step order, reference run/volume for motion correction
+- Skips conversion steps if the expected preprocessed file already exists
+- Saves outputs in a dedicated preprocessing workflow folder
+- Logs every step of the process and captures any errors for later review
+
+Inputs:
+- Raw NIfTI files located in:
+        rawdata/
+            └── sub-XX/ses-YY/func/
+                ├── sub-XX_ses-YY_task-XY_run-ZZ_bold.nii.gz
+    OR raw FMR files located in
+        derivatives/
+            └── rawdata_bv/
+                └── sub-XX/ses-YY/func/
+                    ├── sub-XX_ses-YY_task-XY_run-ZZ_bold.fmr
+    OR partly preprocessed FMR files located in
+        derivatives/
+            └── workflow_id-3_type-1_name-func-preprocessing/
+                └── sub-XX/ses-YY/func/
+                    ├── sub-XX_ses-YY_task-XY_run-ZZ_bold_*.fmr
+
+Outputs:
+- Preprocessed FMR files saved in:
+    derivatives/
+        └── workflow_id-3_type-1_name-func-preprocessing/
+            └── sub-XX/ses-YY/func/
+                ├── sub-XX_ses-YY_task-XY_run-ZZ_bold_*.fmr
+                └── log file (timestamped)
+
+Configuration:
+- Adjust the `options` dictionary to enable/disable preprocessing steps
+- Modify `pipeline_order` to control the order of applied steps
+- Use `starting_suffix` to resume from an intermediate preprocessing file
+- All options and paths can be customized to suit your project setup
 """
 
 import os
@@ -52,6 +99,9 @@ pipeline_order = [
     "smooth_spatial"
 ]
 
+# === ERROR COLLECTION ===
+all_errors = []
+
 # === HELPER FUNCTIONS ===
 def ensure_dir(path):
     if not os.path.isdir(path):
@@ -78,6 +128,8 @@ def get_log_path(sub_id, ses_id):
     return os.path.join(prep_path, f'{sub_id}_{ses_id}_preprocessing_{timestamp}.log')
 
 def log_message(log_file, message):
+    if 'ERROR' in message:
+        all_errors.append(message)
     with open(log_file, 'a', encoding='utf-8') as f:
         f.write(f'{message}\n')
 
@@ -124,12 +176,12 @@ for subj in subjects:
                 if os.path.exists(out_path):
                     log_message(log_file, f'Run {task_name}_{run_id}: Using existing preprocessed FMR → {out_path}')
                 else:
-                    message = f'Run {task_name}_{run_id}: ERROR: Starting FMR file not found: {out_path}. Skipping this run.'
+                    message = f'ERROR: Starting FMR file not found: {out_path}. Skipping this run.'
                     log_message(log_file, message)
                     print(message)
                     continue  # Skip to the next run
             else:
-                # Otherwise start from raw
+                # Otherwise start from raw NIfTI or from raw FMR in rawdata_bv or in preprocessing workflow folder
                 if os.path.exists(out_path):
                     log_message(log_file, f'Run {task_name}_{run_id}: Using existing raw FMR in preprocessing folder → {out_path}')
                 elif os.path.exists(raw_fmr_path):
@@ -137,11 +189,23 @@ for subj in subjects:
                     doc_fmr.save_as(out_path)
                     doc_fmr.close()
                     log_message(log_file, f'Run {task_name}_{run_id}: Copied FMR from rawdata_bv → {out_path}')
-                else:
+                elif os.path.exists(raw_nii_path):
                     doc_fmr = brainvoyager.open(raw_nii_path)
                     doc_fmr.save_as(out_path)
                     doc_fmr.close()
                     log_message(log_file, f'Run {task_name}_{run_id}: Converted NIfTI to FMR → {out_path}')
+                else:
+                    message = (
+                        f'ERROR: Could not find any valid input file for {sub_id}_{ses_id}_{task_name}_{run_id}: '
+                        f'Checked:\n'
+                        f'  - Preprocessed FMR: {out_path}\n'
+                        f'  - Raw FMR: {raw_fmr_path}\n'
+                        f'  - Raw NIfTI: {raw_nii_path}\n'
+                        f'Skipping this run.'
+                    )
+                    log_message(log_file, message)
+                    print(message)
+                    continue  # Skip to the next run
 
 
             # Step 1: Run enabled steps in pipeline_order
@@ -181,10 +245,18 @@ for subj in subjects:
                     log_message(log_file, f'{task_name}_{run_id}: Finished step: {step} → {current_file}')
                     
                 except Exception as e:
-                    log_message(log_file, f'{task_name}_{run_id}: ERROR in step "{step}": {str(e)}')
+                    log_message(log_file, f'ERROR: {sub_id}_{ses_id}_{task_name}_{run_id}: ERROR in step "{step}": {str(e)}')
                     
             log_message(log_file, f'=== Finished preprocessing for {sub_id}_{ses_id}_{task_name}_{run_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} ===\n')
                     
         log_message(log_file, f'=== Finished preprocessing for {sub_id} {ses_id} ===\n')
         print(f'=== Finished preprocessing for {sub_id} {ses_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} ===\n\n')
         print(f'Log file saved: {log_file}')
+
+# === FINAL ERROR SUMMARY ===
+print("\n=== SUMMARY OF ERRORS ===")
+if all_errors:
+    for error in all_errors:
+        print(error)
+else:
+    print("No errors encountered during preprocessing.")
