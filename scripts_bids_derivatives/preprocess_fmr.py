@@ -153,6 +153,26 @@ for subj in subjects:
         # Reference volume setup
         if options["motion_correction"] and options["intrasession"]:
             ref_run = get_ref_run_path(sub_id, ses_id)
+            
+            # check that the reference FMR exists
+            if not os.path.exists(ref_run):
+                raw_nii_ref = os.path.join(
+                    project_path, 'rawdata', sub_id, ses_id, 'func',
+                    f'{sub_id}_{ses_id}_{options["moco_ref_task"]}_{options["moco_ref_run"]}_bold.nii.gz'
+                    )
+
+                if os.path.exists(raw_nii_ref):
+                    doc_tmp = brainvoyager.open(raw_nii_ref)
+                    doc_tmp.close()
+                    log_message(log_file,
+                        f'Reference run missing – converted NIfTI to FMR → {ref_run}')
+                else:
+                    msg = (f'ERROR: Reference FMR ({ref_run}) and NIfTI '
+                           f'({raw_nii_ref}) not found.  ➜ Skipping {sub_id}, {ses_id}.')
+                    log_message(log_file, msg)
+                    print(msg)
+                    continue                      # skip this session loop
+
             ref_vol = 0
             if options["moco_ref_volume"] == "last":
                 doc_ref = brainvoyager.open(ref_run)
