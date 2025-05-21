@@ -55,7 +55,7 @@ func_prep = 'workflow_id-3_type-1_name-func-preprocessing'
 coreg = 'workflow_id-4_type-4_name-func-to-anat-coreg'
 vtc_folder = 'workflow_id-5_type-5_name-func-normalization'
 
-subjects = [1,2,3,4,5,6,7,8,9,10]
+subjects = [1,2,3,4,5,6,7,8,9,10,11,12]
 sessions = [1]
 runs = [1,2]
 task_name = 'task-Localizer'
@@ -129,14 +129,14 @@ for subj in subjects:
         ensure_dir(out_path)
         log_file = pjoin(out_path, f'{sub_id}_{ses_id}_{task_name}_vtc_creation_{timestamp}.log')
 
-        log_message(log_file, f'VTC Creation Log — {sub_id} {ses_id} {task_name}')
+        log_message(log_file, f'VTC Creation Log � {sub_id} {ses_id} {task_name}')
         log_message(log_file, f'Intra-Session Coregistration Used: {use_intrasesscoreg}')
         if use_intrasesscoreg:
             log_message(log_file, f'Intra-Session Coregistration Task Name: {coreg_task_name} |  Intra-Session Coregistration Run-ID: {coreg_run}')
         log_message(log_file, f'Resolution: {res} | Interpolation: {interp_label} | Intensity Threshold: {intensity_thresh} | Bounding Box: {use_bbx}')
         if use_bbx:
             log_message(log_file, f'Bounding Box for Native and/or ACPC VTCs: {bbx}')
-        log_message(log_file, f'Spaces — NATIVE: {CREATE_NATIVE_VTC}, ACPC: {CREATE_ACPC_VTC}, TALAIRACH: {CREATE_TAL_VTC}, MNI: {CREATE_MNI_VTC}\n')
+        log_message(log_file, f'Spaces --  NATIVE: {CREATE_NATIVE_VTC}, ACPC: {CREATE_ACPC_VTC}, TALAIRACH: {CREATE_TAL_VTC}, MNI: {CREATE_MNI_VTC}\n')
 
         try:
             vmr_file = f'{sub_id}_{ses_id}_T1w{anat_suffix}'
@@ -186,6 +186,7 @@ for subj in subjects:
                     else:
                         doc_vmr.create_vtc_in_native_space(fmr, ia_trf, fa_trf, vtc, res, interpol, intensity_thresh)
                         log_message(log_file, f'Native VTC → {vtc}')
+                        print(f'Native VTC created → {vtc}')
                     bv.close_all()
 
             if CREATE_ACPC_VTC:
@@ -209,6 +210,7 @@ for subj in subjects:
                     else: 
                         doc_vmr.create_vtc_in_acpc_space(fmr, ia_trf, fa_trf, acpc_trf, vtc, res, interpol, intensity_thresh)
                         log_message(log_file, f'ACPC VTC → {vtc}')
+                        print(f'ACPC VTC created → {vtc}')
                     bv.close_all()
 
             if CREATE_TAL_VTC:
@@ -234,6 +236,7 @@ for subj in subjects:
                     else: 
                         doc_vmr.create_vtc_in_tal_space(fmr, ia_trf, fa_trf, acpc_trf, tal_file, vtc, res, interpol, intensity_thresh)
                         log_message(log_file, f'Talairach VTC → {vtc}')
+                        print(f'Talairach VTC created → {vtc}')
                     bv.close_all()
 
             if CREATE_MNI_VTC:
@@ -254,6 +257,7 @@ for subj in subjects:
                     else: 
                         doc_vmr.create_vtc_in_mni_space(fmr, ia_trf, fa_trf, mni_trf, vtc, res, interpol, intensity_thresh)
                         log_message(log_file, f'MNI VTC → {vtc}')
+                        print(f'MNI VTC created → {vtc}')
                     bv.close_all()
 
 # === SUMMARY ===
