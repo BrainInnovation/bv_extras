@@ -129,7 +129,7 @@ for subj in subjects:
         ensure_dir(out_path)
         log_file = pjoin(out_path, f'{sub_id}_{ses_id}_{task_name}_vtc_creation_{timestamp}.log')
 
-        log_message(log_file, f'VTC Creation Log � {sub_id} {ses_id} {task_name}')
+        log_message(log_file, f'VTC Creation Log → {sub_id} {ses_id} {task_name}')
         log_message(log_file, f'Intra-Session Coregistration Used: {use_intrasesscoreg}')
         if use_intrasesscoreg:
             log_message(log_file, f'Intra-Session Coregistration Task Name: {coreg_task_name} |  Intra-Session Coregistration Run-ID: {coreg_run}')
@@ -186,7 +186,7 @@ for subj in subjects:
                     else:
                         log_message(log_file, f'Starting Native VTC creation for {sub_id}_{ses_id}_{task_name}_{run_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                         doc_vmr.create_vtc_in_native_space(fmr, ia_trf, fa_trf, vtc, res, interpol, intensity_thresh)
-                        log_message(log_file, f'Native VTC → {vtc}')
+                        log_message(log_file, f'Native VTC created at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} → {vtc}')
                         print(f'Native VTC created → {vtc}')
                     bv.close_all()
 
@@ -211,7 +211,7 @@ for subj in subjects:
                     else: 
                         log_message(log_file, f'Starting ACPC VTC creation for {sub_id}_{ses_id}_{task_name}_{run_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                         doc_vmr.create_vtc_in_acpc_space(fmr, ia_trf, fa_trf, acpc_trf, vtc, res, interpol, intensity_thresh)
-                        log_message(log_file, f'ACPC VTC → {vtc}')
+                        log_message(log_file, f'ACPC VTC created at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} → {vtc}')
                         print(f'ACPC VTC created → {vtc}')
                     bv.close_all()
 
@@ -238,7 +238,7 @@ for subj in subjects:
                     else: 
                         log_message(log_file, f'Starting Talairach VTC creation for {sub_id}_{ses_id}_{task_name}_{run_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                         doc_vmr.create_vtc_in_tal_space(fmr, ia_trf, fa_trf, acpc_trf, tal_file, vtc, res, interpol, intensity_thresh)
-                        log_message(log_file, f'Talairach VTC → {vtc}')
+                        log_message(log_file, f'Talairach VTC created at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} → {vtc}')
                         print(f'Talairach VTC created → {vtc}')
                     bv.close_all()
 
@@ -260,7 +260,7 @@ for subj in subjects:
                     else: 
                         log_message(log_file, f'Starting MNI VTC creation for {sub_id}_{ses_id}_{task_name}_{run_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                         doc_vmr.create_vtc_in_mni_space(fmr, ia_trf, fa_trf, mni_trf, vtc, res, interpol, intensity_thresh)
-                        log_message(log_file, f'MNI VTC → {vtc}')
+                        log_message(log_file, f'MNI VTC created at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} → {vtc}')
                         print(f'MNI VTC created → {vtc}')
                     bv.close_all()
 
