@@ -184,6 +184,7 @@ for subj in subjects:
                         errors.append(msg)
                         log_message(log_file, msg)
                     else:
+                        log_message(log_file, f'Starting Native VTC creation for {sub_id}_{ses_id}_{task_name}_{run_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                         doc_vmr.create_vtc_in_native_space(fmr, ia_trf, fa_trf, vtc, res, interpol, intensity_thresh)
                         log_message(log_file, f'Native VTC → {vtc}')
                         print(f'Native VTC created → {vtc}')
@@ -208,6 +209,7 @@ for subj in subjects:
                         errors.append(msg)
                         log_message(log_file, msg)
                     else: 
+                        log_message(log_file, f'Starting ACPC VTC creation for {sub_id}_{ses_id}_{task_name}_{run_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                         doc_vmr.create_vtc_in_acpc_space(fmr, ia_trf, fa_trf, acpc_trf, vtc, res, interpol, intensity_thresh)
                         log_message(log_file, f'ACPC VTC → {vtc}')
                         print(f'ACPC VTC created → {vtc}')
@@ -234,6 +236,7 @@ for subj in subjects:
                         errors.append(msg)
                         log_message(log_file, msg)
                     else: 
+                        log_message(log_file, f'Starting Talairach VTC creation for {sub_id}_{ses_id}_{task_name}_{run_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                         doc_vmr.create_vtc_in_tal_space(fmr, ia_trf, fa_trf, acpc_trf, tal_file, vtc, res, interpol, intensity_thresh)
                         log_message(log_file, f'Talairach VTC → {vtc}')
                         print(f'Talairach VTC created → {vtc}')
@@ -255,6 +258,7 @@ for subj in subjects:
                         errors.append(msg)
                         log_message(log_file, msg)
                     else: 
+                        log_message(log_file, f'Starting MNI VTC creation for {sub_id}_{ses_id}_{task_name}_{run_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                         doc_vmr.create_vtc_in_mni_space(fmr, ia_trf, fa_trf, mni_trf, vtc, res, interpol, intensity_thresh)
                         log_message(log_file, f'MNI VTC → {vtc}')
                         print(f'MNI VTC created → {vtc}')
