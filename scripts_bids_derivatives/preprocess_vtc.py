@@ -115,7 +115,7 @@ for subj in subjects:
         ensure_dir(out_path)
         log_file = pjoin(out_path, f'{sub_id}_{ses_id}_{task_name}_vtc_preprocessing_{timestamp}.log')
 
-        log_message(log_file, f'VTC Preprocessing Log — {sub_id} {ses_id} {task_name}')
+        log_message(log_file, f'VTC Preprocessing Log: {sub_id} {ses_id} {task_name}')
         log_message(log_file, f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         log_message(log_file, "Preprocessing options:")
 
